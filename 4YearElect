@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jan 12 21:06:10 2021
+
+@author: carenvietor
+"""
+
+
+import numpy as np 
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns 
+from scipy import stats
+
+#Data Candidatevotes 2012/2016
+data_cv = pd.read_csv (r'DataVotes.csv')
+df=pd.DataFrame(data_cv, columns= ['year','state','party','candidate','candidatevotes','totalvotes'])
+df_year=df.iloc[-661:-1,]
+print(df_year)
+
+#Data 2016 Voter information
+data_ci=pd.read_csv(r'county_facts.csv')
+df_ci=pd.DataFrame(data_ci,columns=['state_abbreviation','PST045214','AGE135214','AGE295214','AGE775214','SEX255214'])
+df_ci.rename(columns={'PST045214':'Population 2014','AGE135214':'Persons<5y','AGE295214':'Persons<18y','AGE775214':'Persons>65y','SEX255214':'Female %'}, inplace=True)
+print(df_ci)
