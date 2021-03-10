@@ -88,6 +88,17 @@ def education_graduate():
     df = df.rename(mapper=partial(test, x='graduate '), axis='columns')
     return df
 
+def state_facts():
+    filename = "data/state_facts.csv"
+    df7 = pd.read_csv(filename, sep=';')
+    df7.info()
+    df7 = df7.drop(['fips'], axis=1)
+    df7 = df7.rename(index=str, columns={'area_name': 'states'})
+    df7 = df7[df7["states"] != 'United States']
+    df7 = df7[df7['state_abbreviation'].isna()]
+    df7 = df7.drop(['state_abbreviations'], axis=1)
+    return df
+
 if __name__ == '__main__':
     df= cleanGDP()
     print(df.head())
@@ -101,7 +112,8 @@ if __name__ == '__main__':
     print(df5.head())
     df6= education_graduate()
     print(df6.head())
-
+    df7= state_facts()
+    print(df7.head())
 
 
 
