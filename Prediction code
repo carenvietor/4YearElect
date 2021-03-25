@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Jan 12 21:06:10 2021
+
+@author: carenvietor
+"""
+
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn import neighbors
+from sklearn.metrics import classification_report, confusion_matrix,accuracy_score
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import cross_val_score
+
+#Import Final Data
+data=pd.read_csv('finaldata.csv')
+data = data.dropna(axis =0)
+y=data.loc[:,'2016 winner']
+data=data.iloc[:,1:216]
+x=data
+data.drop(['highschool 2016','highschool 2017','highschool 2018','bachelor 2016','bachelor 2017','bachelor 2018','graduate 2016','graduate 2017','graduate 2018'],axis=1,inplace=True)
+
+
+#Convert string
+enc=LabelEncoder()
+y=enc.fit_transform(y)
+
+#Split Data
+x_train, x_test, y_train, y_test = train_test_split(x, y,test_size=0.25,random_state=0)
+
+#Linear Regression
+lr=LinearRegression(normalize=True).fit(x_train,y_train)
+lr.predict(x_test)
+prediction = lr.predict(x_test)
+prediction = [0 if pred < 0.5 else 1 for pred in prediction]
+print(prediction)
+print(np.subtract(prediction, y_test))
+
+#KNN
+knn=neighbors.KNeighborsClassifier(n_neighbors=5)
+knn.fit(x_train,y_train)
+predicted=knn.predict(x_test)
+print(confusion_matrix(y_test,predicted))
+print(classification_report(y_test,predicted))
+print(accuracy_score(y_test, predicted))
+scores = cross_val_score(knn, x, y, cv=10)
+print("Accuracy of Model with Cross Validation is:" ,scores.mean()*100)
+
+#Random Forrest
+classi=RandomForestClassifier(n_estimators=200,criterion='gini',max_depth=5,min_samples_split=2,min_samples_leaf=2,
+                min_weight_fraction_leaf=0.0,max_features='auto',random_state=0,class_weight='balanced_subsample')
+classi.fit(x_train,y_train)
+y_pred=classi.predict(x_test)
+print(confusion_matrix(y_test,y_pred))
+print(classification_report(y_test,y_pred))
+print(accuracy_score(y_test, y_pred))
+scores = cross_val_score(classi, x, y, cv=10)
+print("Accuracy of Model with Cross Validation is:" ,scores.mean()*100)
+
+#SVM
+svclassifier=SVC(kernel='linear')
+svclassifier.fit(x_train,y_train)
+pred=svclassifier.predict(x_test)
+print(confusion_matrix(y_test,pred))
+print(classification_report(y_test,pred))
+print(accuracy_score(y_test, pred))
+scores = cross_val_score(svclassifier, x, y, cv=10)
+print("Accuracy of Model with Cross Validation is:" ,scores.mean()*100)
+
+#Decision Tree
+classifier=DecisionTreeClassifier(random_state=0)
+classifier.fit(x_train,y_train)
+predi=classifier.predict(x_test)
+print(confusion_matrix(y_test, predi))
+print(classification_report(y_test, predi))
+print(accuracy_score(y_test, predi))
+scores = cross_val_score(classifier, x, y, cv=10)
+print("Accuracy of Model with Cross Validation is:" ,scores.mean()*100)
+
